@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FLAMA.BC — Inscrição Estudo Bíblico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-0: #0a0604;
+    --bg-1: #150b06;
+    --bg-2: #1f120a;
+    --ember: #ff5e1f;
+    --flame: #ff8a2a;
+    --gold: #ffc23a;
+    --white: #fff8f0;
+    --muted: #c8b8a8;
+    --line: rgba(255, 138, 42, 0.18);
+    --line-strong: rgba(255, 138, 42, 0.5);
+    --error: #ff4d4d;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg-0);
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Fundo com brasa viva */
+  .bg-glow {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse at 50% 110%, rgba(255, 94, 31, 0.55) 0%, rgba(255, 94, 31, 0.18) 30%, transparent 60%),
+      radial-gradient(ellipse at 15% -10%, rgba(255, 194, 58, 0.18) 0%, transparent 50%),
+      radial-gradient(ellipse at 85% 0%, rgba(255, 94, 31, 0.18) 0%, transparent 50%),
+      linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 60%, #2a1308 100%);
+  }
+
+  .ember-particles {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .ember {
+    position: absolute;
+    bottom: -20px;
+    width: 4px; height: 4px;
+    background: var(--flame);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--ember), 0 0 16px var(--ember);
+    opacity: 0;
+    animation: rise linear infinite;
+  }
+  @keyframes rise {
+    0% { transform: translateY(0) translateX(0); opacity: 0; }
+    10% { opacity: 0.9; }
+    100% { transform: translateY(-110vh) translateX(var(--drift, 30px)); opacity: 0; }
+  }
+
+  .container {
+    position: relative;
+    z-index: 2;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 56px 24px 80px;
+  }
+
+  /* Header / brand */
+  .brand {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 88px; height: 88px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 60%, var(--gold) 0%, var(--ember) 45%, transparent 75%);
+    box-shadow:
+      0 0 40px rgba(255, 94, 31, 0.6),
+      0 0 80px rgba(255, 94, 31, 0.3),
+      inset 0 -10px 20px rgba(255, 77, 0, 0.5);
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .brand-mark svg { width: 44px; height: 44px; filter: drop-shadow(0 0 6px rgba(0,0,0,0.4)); }
+
+  .brand-title {
+    font-family: 'Bebas Neue', 'Inter', sans-serif;
+    font-size: 56px;
+    letter-spacing: 6px;
+    margin: 0;
+    line-height: 1;
+    background: linear-gradient(180deg, #fff 0%, var(--gold) 60%, var(--ember) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    text-shadow: 0 0 30px rgba(255, 138, 42, 0.25);
+  }
+  .brand-subtitle {
+    margin: 6px 0 0;
+    font-size: 12px;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .brand-tagline {
+    margin: 22px 0 0;
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Card formulário */
+  .card {
+    background: linear-gradient(180deg, rgba(31, 18, 10, 0.85) 0%, rgba(15, 9, 5, 0.92) 100%);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 36px 32px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow:
+      0 30px 80px -20px rgba(0,0,0,0.6),
+      0 0 0 1px rgba(255,255,255,0.02) inset,
+      0 -1px 0 rgba(255, 138, 42, 0.15) inset;
+  }
+
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 700;
+    margin-bottom: 18px;
+  }
+  .section-label::before {
+    content: "";
+    width: 18px; height: 1px;
+    background: var(--gold);
+    display: inline-block;
+  }
+
+  .field {
+    margin-bottom: 22px;
+  }
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 8px;
+    letter-spacing: 0.3px;
+  }
+  .field label .required {
+    color: var(--ember);
+    margin-left: 4px;
+  }
+  .field input[type="text"],
+  .field input[type="tel"] {
+    width: 100%;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: var(--white);
+    font-family: inherit;
+    font-size: 15px;
+    transition: all 0.2s;
+    outline: none;
+  }
+  .field input::placeholder { color: rgba(200, 184, 168, 0.4); }
+  .field input:focus {
+    border-color: var(--ember);
+    box-shadow: 0 0 0 3px rgba(255, 94, 31, 0.18);
+    background: rgba(0,0,0,0.55);
+  }
+  .field .hint {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  /* Bíblia */
+  .bible-section { margin-top: 36px; }
+  .bible-counter {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 94, 31, 0.12);
+    border: 1px solid var(--line-strong);
+    color: var(--gold);
+    font-weight: 600;
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    margin-left: auto;
+  }
+  .bible-counter.full { background: rgba(255, 94, 31, 0.28); }
+  .bible-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+
+  .testament-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    background: rgba(0,0,0,0.45);
+    padding: 6px;
+    border-radius: 14px;
+    margin-bottom: 16px;
+    border: 1px solid var(--line);
+  }
+  .testament-tab {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .testament-tab.active {
+    background: linear-gradient(135deg, var(--ember) 0%, var(--flame) 100%);
+    color: #1a0a04;
+    box-shadow: 0 6px 20px -4px rgba(255, 94, 31, 0.55);
+  }
+
+  .search-wrap {
+    position: relative;
+    margin-bottom: 14px;
+  }
+  .search-wrap svg {
+    position: absolute;
+    left: 14px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+  }
+  .search-wrap input {
+    width: 100%;
+    padding: 12px 14px 12px 42px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    color: var(--white);
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+  }
+  .search-wrap input:focus {
+    border-color: var(--flame);
+  }
+
+  .books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 8px;
+    max-height: 320px;
+    overflow-y: auto;
+    padding: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--ember) transparent;
+  }
+  .books-grid::-webkit-scrollbar { width: 6px; }
+  .books-grid::-webkit-scrollbar-thumb { background: var(--ember); border-radius: 3px; }
+
+  .book-chip {
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+  }
+  .book-chip input { position: absolute; opacity: 0; pointer-events: none; }
+  .book-chip span {
+    display: block;
+    text-align: center;
+    padding: 11px 8px;
+    font-size: 13px;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    color: var(--white);
+    transition: all 0.18s;
+  }
+  .book-chip:hover span {
+    background: rgba(255, 138, 42, 0.08);
+    border-color: var(--line-strong);
+  }
+  .book-chip input:checked + span {
+    background: linear-gradient(135deg, rgba(255, 94, 31, 0.95) 0%, rgba(255, 138, 42, 0.95) 100%);
+    color: #1a0a04;
+    border-color: var(--gold);
+    font-weight: 700;
+    box-shadow: 0 6px 18px -4px rgba(255, 94, 31, 0.6);
+  }
+  .book-chip.disabled span {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .selected-summary {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: rgba(255, 138, 42, 0.06);
+    border: 1px dashed var(--line-strong);
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--muted);
+    min-height: 18px;
+  }
+  .selected-summary strong { color: var(--gold); }
+
+  /* Botão */
+  .btn-submit {
+    margin-top: 32px;
+    width: 100%;
+    padding: 18px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #ff4500 0%, var(--ember) 50%, var(--flame) 100%);
+    color: #1a0a04;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow:
+      0 12px 32px -8px rgba(255, 94, 31, 0.7),
+      0 0 0 1px rgba(255, 200, 100, 0.4) inset;
+    text-transform: uppercase;
+  }
+  .btn-submit:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow:
+      0 18px 40px -8px rgba(255, 94, 31, 0.85),
+      0 0 0 1px rgba(255, 200, 100, 0.5) inset;
+  }
+  .btn-submit:active { transform: translateY(0); }
+  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .footer {
+    text-align: center;
+    margin-top: 32px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(200, 184, 168, 0.5);
+  }
+
+  /* Mensagens */
+  .message {
+    margin-top: 20px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    display: none;
+  }
+  .message.success {
+    background: rgba(40, 200, 100, 0.12);
+    border: 1px solid rgba(40, 200, 100, 0.4);
+    color: #7fe6a8;
+    display: block;
+  }
+  .message.error {
+    background: rgba(255, 77, 77, 0.12);
+    border: 1px solid rgba(255, 77, 77, 0.4);
+    color: #ffadad;
+    display: block;
+  }
+
+  /* Tela de sucesso */
+  .success-screen {
+    text-align: center;
+    padding: 30px 0 10px;
+    display: none;
+  }
+  .success-screen.visible { display: block; }
+  .success-icon {
+    width: 80px; height: 80px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--gold) 0%, var(--ember) 70%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 40px rgba(255, 138, 42, 0.6);
+  }
+  .success-screen h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 4px;
+    margin: 0 0 12px;
+    color: var(--gold);
+  }
+  .success-screen p {
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 420px;
+    margin: 0 auto 24px;
+  }
+  .btn-secondary {
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid var(--line-strong);
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-size: 12px;
+  }
+  .btn-secondary:hover { background: rgba(255, 138, 42, 0.1); }
+
+  @media (max-width: 520px) {
+    .container { padding: 36px 16px 60px; }
+    .card { padding: 26px 20px; }
+    .brand-title { font-size: 44px; letter-spacing: 4px; }
+    .books-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+<div class="ember-particles" id="emberContainer"></div>
+
+<div class="container">
+
+  <!-- BRAND -->
+  <div class="brand">
+    <div class="brand-mark" aria-hidden="true">
+      <!-- Ícone de chama -->
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C12 2 7 7 7 12C7 16.4183 9.23858 19 12 19C14.7614 19 17 16.4183 17 12C17 9 15 7 12 2Z"
+              fill="#1a0a04"/>
+        <path d="M12 8C12 8 9.5 11 9.5 13.5C9.5 15.4 10.6 16.5 12 16.5C13.4 16.5 14.5 15.4 14.5 13.5C14.5 12 13.5 11 12 8Z"
+              fill="#fff8f0"/>
+      </svg>
+    </div>
+    <h1 class="brand-title">FLAMA</h1>
+    <div class="brand-subtitle">B · C</div>
+    <p class="brand-tagline">
+      Estudo bíblico em comunidade. Escolha até <strong style="color:var(--gold)">2 livros</strong>
+      da Bíblia que você quer mergulhar com a gente.
+    </p>
+  </div>
+
+  <!-- FORM -->
+  <form class="card" id="flamaForm" novalidate>
+    <div id="formContent">
+
+      <div class="section-label">Seus dados</div>
+
+      <div class="field">
+        <label for="nome">Nome completo<span class="required">*</span></label>
+        <input type="text" id="nome" name="nome" placeholder="Como você quer ser chamado(a)?" required maxlength="80" autocomplete="name" />
+      </div>
+
+      <div class="field">
+        <label for="telefone">Telefone (WhatsApp)<span class="required">*</span></label>
+        <input type="tel" id="telefone" name="telefone" placeholder="(51) 9 9999-9999" required maxlength="20" autocomplete="tel" />
+        <div class="hint">Vamos te avisar pelo WhatsApp sobre o grupo.</div>
+      </div>
+
+      <div class="bible-section">
+        <div class="bible-header">
+          <div class="section-label" style="margin-bottom:0;">Livros para estudar</div>
+          <div class="bible-counter" id="counter">0 / 2 selecionados</div>
+        </div>
+
+        <div class="testament-tabs" role="tablist">
+          <button type="button" class="testament-tab active" data-tab="at" role="tab">Antigo Testamento</button>
+          <button type="button" class="testament-tab" data-tab="nt" role="tab">Novo Testamento</button>
+        </div>
+
+        <div class="search-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.3-4.3"></path>
+          </svg>
+          <input type="text" id="search" placeholder="Buscar livro..." />
+        </div>
+
+        <div class="books-grid" id="booksGrid"></div>
+
+        <div class="selected-summary" id="summary">
+          Nenhum livro selecionado.
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">Enviar inscrição</button>
+      <div class="message" id="message"></div>
+    </div>
+
+    <!-- Tela de sucesso -->
+    <div class="success-screen" id="successScreen">
+      <div class="success-icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#1a0a04" stroke-width="3"
+             stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <h2>Inscrição confirmada!</h2>
+      <p>
+        Recebemos sua inscrição na FLAMA. Em breve entraremos em contato pelo
+        WhatsApp com mais informações sobre os encontros e o grupo de estudo.
+      </p>
+      <button type="button" class="btn-secondary" onclick="location.reload()">Nova inscrição</button>
+    </div>
+  </form>
+
+  <div class="footer">FLAMA · Brasa Church · Porto Alegre</div>
+</div>
+
+<script>
+  // ===========================================================
+  // CONFIGURAÇÃO — Cole aqui a URL do Google Apps Script Web App
+  // (veja CONFIGURACAO-GOOGLE-SHEETS.md para passo a passo)
+  // ===========================================================
+  const GOOGLE_SCRIPT_URL = "COLOQUE_AQUI_A_URL_DO_APPS_SCRIPT";
+
+  // 66 livros da Bíblia (cânon protestante)
+  const BIBLE = {
+    at: [
+      "Gênesis", "Êxodo", "Levítico", "Números", "Deuteronômio",
+      "Josué", "Juízes", "Rute", "1 Samuel", "2 Samuel",
+      "1 Reis", "2 Reis", "1 Crônicas", "2 Crônicas", "Esdras",
+      "Neemias", "Ester", "Jó", "Salmos", "Provérbios",
+      "Eclesiastes", "Cantares", "Isaías", "Jeremias", "Lamentações",
+      "Ezequiel", "Daniel", "Oseias", "Joel", "Amós",
+      "Obadias", "Jonas", "Miqueias", "Naum", "Habacuque",
+      "Sofonias", "Ageu", "Zacarias", "Malaquias"
+    ],
+    nt: [
+      "Mateus", "Marcos", "Lucas", "João", "Atos",
+      "Romanos", "1 Coríntios", "2 Coríntios", "Gálatas", "Efésios",
+      "Filipenses", "Colossenses", "1 Tessalonicenses", "2 Tessalonicenses",
+      "1 Timóteo", "2 Timóteo", "Tito", "Filemom", "Hebreus",
+      "Tiago", "1 Pedro", "2 Pedro", "1 João", "2 João",
+      "3 João", "Judas", "Apocalipse"
+    ]
+  };
+
+  const grid = document.getElementById('booksGrid');
+  const counter = document.getElementById('counter');
+  const summary = document.getElementById('summary');
+  const searchInput = document.getElementById('search');
+  let activeTab = 'at';
+  const selected = new Set();
+
+  function renderBooks() {
+    const term = searchInput.value.trim().toLowerCase();
+    const list = BIBLE[activeTab];
+    grid.innerHTML = '';
+    list.forEach(book => {
+      if (term && !book.toLowerCase().includes(term)) return;
+      const isChecked = selected.has(book);
+      const isDisabled = !isChecked && selected.size >= 2;
+      const label = document.createElement('label');
+      label.className = 'book-chip' + (isDisabled ? ' disabled' : '');
+      label.innerHTML = `
+        <input type="checkbox" value="${book}" ${isChecked ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
+        <span>${book}</span>
+      `;
+      label.querySelector('input').addEventListener('change', e => {
+        if (e.target.checked) {
+          if (selected.size >= 2) { e.target.checked = false; return; }
+          selected.add(book);
+        } else {
+          selected.delete(book);
+        }
+        renderBooks();
+        updateCounter();
+      });
+      grid.appendChild(label);
+    });
+  }
+
+  function updateCounter() {
+    counter.textContent = selected.size + ' / 2 selecionados';
+    counter.classList.toggle('full', selected.size === 2);
+    if (selected.size === 0) {
+      summary.innerHTML = 'Nenhum livro selecionado.';
+    } else {
+      const items = [...selected].map(b => `<strong>${b}</strong>`).join(' &nbsp;·&nbsp; ');
+      summary.innerHTML = 'Selecionado(s): ' + items;
+    }
+  }
+
+  // Tabs
+  document.querySelectorAll('.testament-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.testament-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeTab = btn.dataset.tab;
+      searchInput.value = '';
+      renderBooks();
+    });
+  });
+
+  searchInput.addEventListener('input', renderBooks);
+
+  // Máscara de telefone (BR)
+  const telInput = document.getElementById('telefone');
+  telInput.addEventListener('input', e => {
+    let v = e.target.value.replace(/\D/g, '').slice(0, 11);
+    if (v.length > 10)      v = v.replace(/^(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+    else if (v.length > 6)  v = v.replace(/^(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+    else if (v.length > 2)  v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+    else if (v.length > 0)  v = v.replace(/^(\d{0,2})/, '($1');
+    e.target.value = v;
+  });
+
+  // Brasas/partículas
+  function spawnEmbers(n) {
+    const c = document.getElementById('emberContainer');
+    for (let i = 0; i < n; i++) {
+      const e = document.createElement('div');
+      e.className = 'ember';
+      e.style.left = Math.random() * 100 + '%';
+      e.style.animationDuration = (8 + Math.random() * 8) + 's';
+      e.style.animationDelay = (Math.random() * 8) + 's';
+      e.style.setProperty('--drift', (Math.random() * 80 - 40) + 'px');
+      e.style.opacity = (0.4 + Math.random() * 0.5);
+      e.style.width = e.style.height = (2 + Math.random() * 4) + 'px';
+      c.appendChild(e);
+    }
+  }
+
+  // Submit
+  const form = document.getElementById('flamaForm');
+  const message = document.getElementById('message');
+  const submitBtn = document.getElementById('submitBtn');
+
+  form.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    message.className = 'message';
+    message.textContent = '';
+
+    const nome = document.getElementById('nome').value.trim();
+    const telefone = telInput.value.trim();
+
+    if (!nome) return showError('Por favor, informe seu nome.');
+    if (telefone.replace(/\D/g, '').length < 10) return showError('Informe um telefone válido com DDD.');
+    if (selected.size === 0) return showError('Escolha pelo menos 1 livro da Bíblia.');
+
+    const books = [...selected];
+    const payload = {
+      timestamp: new Date().toISOString(),
+      nome: nome,
+      telefone: telefone,
+      livro1: books[0] || '',
+      livro2: books[1] || ''
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Enviando...';
+
+    try {
+      if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.startsWith('http')) {
+        // Envio para Google Apps Script (no-cors p/ evitar preflight)
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+      } else {
+        // Modo demo (sem URL configurada): apenas simula sucesso
+        console.log('[FLAMA demo] payload:', payload);
+        await new Promise(r => setTimeout(r, 800));
+      }
+      document.getElementById('formContent').style.display = 'none';
+      document.getElementById('successScreen').classList.add('visible');
+    } catch (err) {
+      console.error(err);
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Enviar inscrição';
+      showError('Não foi possível enviar agora. Tente novamente em instantes.');
+    }
+  });
+
+  function showError(msg) {
+    message.className = 'message error';
+    message.textContent = msg;
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Enviar inscrição';
+  }
+
+  // Init
+  renderBooks();
+  updateCounter();
+  spawnEmbers(28);
+</script>
+</body>
+</html>
