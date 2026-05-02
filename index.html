@@ -3,396 +3,551 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>FLAMA.BC — Inscrição Estudo Bíblico</title>
+<title>FLAMA.BC — Super Bible World</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 <style>
+  /* ============== MARIO PALETTE ============== */
   :root {
-    --bg-0: #0a0604;
-    --bg-1: #150b06;
-    --bg-2: #1f120a;
-    --ember: #ff5e1f;
-    --flame: #ff8a2a;
-    --gold: #ffc23a;
-    --white: #fff8f0;
-    --muted: #c8b8a8;
-    --line: rgba(255, 138, 42, 0.18);
-    --line-strong: rgba(255, 138, 42, 0.5);
-    --error: #ff4d4d;
+    --sky:        #5C94FC;
+    --sky-light:  #87CEFF;
+    --cloud:      #ffffff;
+    --brick:      #C84C0C;
+    --brick-dark: #6B2300;
+    --brick-dot:  #000000;
+    --ground:     #C84C0C;
+    --pipe:       #00A800;
+    --pipe-light: #58D854;
+    --pipe-dark:  #006B00;
+    --block-yellow:#FCD200;
+    --block-orange:#E89C00;
+    --block-shade:#A04000;
+    --mario-red:  #E52521;
+    --mario-blue: #0066FF;
+    --mario-skin: #FCBCB0;
+    --mario-brown:#6F2E00;
+    --mario-yellow:#FCD200;
+    --coin-gold:  #FFD700;
+    --black:      #000000;
+    --white:      #ffffff;
+    --text-dark:  #2A1606;
   }
 
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; image-rendering: pixelated; image-rendering: crisp-edges; }
   html, body { margin: 0; padding: 0; }
 
   body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    background: var(--bg-0);
-    color: var(--white);
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    background: var(--sky);
+    color: var(--text-dark);
     min-height: 100vh;
     overflow-x: hidden;
     position: relative;
   }
 
-  /* Fundo com brasa viva */
-  .bg-glow {
+  /* ============== CÉU + NUVENS ============== */
+  .sky-bg {
     position: fixed;
     inset: 0;
     z-index: 0;
+    background: linear-gradient(180deg, var(--sky) 0%, var(--sky-light) 100%);
     pointer-events: none;
-    background:
-      radial-gradient(ellipse at 50% 110%, rgba(255, 94, 31, 0.55) 0%, rgba(255, 94, 31, 0.18) 30%, transparent 60%),
-      radial-gradient(ellipse at 15% -10%, rgba(255, 194, 58, 0.18) 0%, transparent 50%),
-      radial-gradient(ellipse at 85% 0%, rgba(255, 94, 31, 0.18) 0%, transparent 50%),
-      linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 60%, #2a1308 100%);
   }
 
-  .ember-particles {
+  .clouds {
     position: fixed;
     inset: 0;
     z-index: 1;
     pointer-events: none;
     overflow: hidden;
   }
-  .ember {
+  .cloud {
     position: absolute;
-    bottom: -20px;
-    width: 4px; height: 4px;
-    background: var(--flame);
-    border-radius: 50%;
-    box-shadow: 0 0 8px var(--ember), 0 0 16px var(--ember);
-    opacity: 0;
-    animation: rise linear infinite;
+    width: 90px;
+    height: 30px;
+    background: var(--cloud);
+    border-radius: 30px;
+    box-shadow:
+      -20px -10px 0 -8px var(--cloud),
+      20px -12px 0 -6px var(--cloud),
+      0 -16px 0 -4px var(--cloud);
+    animation: drift linear infinite;
+    opacity: 0.95;
   }
-  @keyframes rise {
-    0% { transform: translateY(0) translateX(0); opacity: 0; }
-    10% { opacity: 0.9; }
-    100% { transform: translateY(-110vh) translateX(var(--drift, 30px)); opacity: 0; }
+  .cloud::before, .cloud::after {
+    content: ""; position: absolute; background: var(--cloud); border-radius: 50%;
+  }
+  .cloud::before { width: 30px; height: 30px; left: 10px; top: -15px; }
+  .cloud::after  { width: 40px; height: 40px; left: 35px; top: -20px; }
+
+  @keyframes drift {
+    0%   { transform: translateX(110vw); }
+    100% { transform: translateX(-150px); }
   }
 
-  .container {
+  /* ============== HUD topo (estilo Mario) ============== */
+  .hud {
     position: relative;
-    z-index: 2;
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 56px 24px 80px;
+    z-index: 5;
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    flex-wrap: wrap;
+    letter-spacing: 1px;
+    border-bottom: 4px solid #fff;
+    box-shadow: 0 4px 0 var(--brick-dark);
+  }
+  .hud-block { display: flex; flex-direction: column; align-items: center; gap: 4px; line-height: 1; }
+  .hud-block .label { color: var(--white); font-size: 10px; }
+  .hud-block .value { color: var(--coin-gold); font-size: 12px; }
+  .coin-icon {
+    display: inline-block;
+    width: 12px; height: 12px;
+    background: var(--coin-gold);
+    border: 2px solid var(--black);
+    border-radius: 50%;
+    box-shadow: inset -2px -2px 0 #c9a000;
+    margin-right: 6px;
+    vertical-align: middle;
   }
 
-  /* Header / brand */
-  .brand {
-    text-align: center;
-    margin-bottom: 48px;
+  /* ============== STAGE com Mario animado ============== */
+  .stage {
+    position: relative;
+    z-index: 4;
+    height: 220px;
+    width: 100%;
+    overflow: hidden;
+    background: linear-gradient(180deg, transparent 0%, transparent 65%, #1ca700 65%, #1ca700 100%);
   }
-  .brand-mark {
-    display: inline-flex;
+
+  /* Lucky Block ? */
+  .lucky-block {
+    position: absolute;
+    bottom: 110px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 56px; height: 56px;
+    background: var(--block-yellow);
+    border: 4px solid var(--black);
+    box-shadow:
+      inset 0 0 0 4px var(--block-orange),
+      inset 0 -8px 0 4px var(--block-shade),
+      4px 4px 0 var(--black);
+    display: flex;
     align-items: center;
     justify-content: center;
-    width: 88px; height: 88px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 50% 60%, var(--gold) 0%, var(--ember) 45%, transparent 75%);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 28px;
+    color: var(--white);
+    text-shadow: 2px 2px 0 var(--black);
+    animation: blockBlink 1.5s infinite;
+  }
+  @keyframes blockBlink {
+    0%, 100% { background: var(--block-yellow); }
+    50%      { background: var(--coin-gold); }
+  }
+  .lucky-block.hit { animation: blockHit 0.3s; }
+  @keyframes blockHit {
+    0%   { transform: translateX(-50%) translateY(0); background: var(--block-yellow); }
+    50%  { transform: translateX(-50%) translateY(-12px); background: #c8c8c8; }
+    100% { transform: translateX(-50%) translateY(0); background: #c8c8c8; }
+  }
+
+  /* Coin que sai */
+  .coin-pop {
+    position: absolute;
+    bottom: 170px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 16px; height: 22px;
+    background: var(--coin-gold);
+    border: 2px solid var(--black);
+    border-radius: 4px;
+    opacity: 0;
+    animation: coinPop 4s infinite;
+    animation-delay: 1.7s;
+  }
+  @keyframes coinPop {
+    0%, 38% { opacity: 0; transform: translateX(-50%) translateY(0) scaleX(1); }
+    40%     { opacity: 1; transform: translateX(-50%) translateY(0) scaleX(1); }
+    55%     { opacity: 1; transform: translateX(-50%) translateY(-50px) scaleX(0.4); }
+    65%     { opacity: 1; transform: translateX(-50%) translateY(-30px) scaleX(1); }
+    75%     { opacity: 0; transform: translateX(-50%) translateY(-10px) scaleX(0.4); }
+    100%    { opacity: 0; }
+  }
+
+  /* Pipes */
+  .pipe {
+    position: absolute;
+    bottom: 0;
+    width: 70px;
+    height: 100px;
+    background: var(--pipe);
+    border: 4px solid var(--black);
     box-shadow:
-      0 0 40px rgba(255, 94, 31, 0.6),
-      0 0 80px rgba(255, 94, 31, 0.3),
-      inset 0 -10px 20px rgba(255, 77, 0, 0.5);
-    margin-bottom: 20px;
+      inset 6px 0 0 var(--pipe-light),
+      inset -10px 0 0 var(--pipe-dark);
+  }
+  .pipe::before {
+    content: "";
+    position: absolute;
+    top: -16px; left: -10px;
+    width: calc(100% + 20px);
+    height: 24px;
+    background: var(--pipe);
+    border: 4px solid var(--black);
+    box-shadow:
+      inset 6px 0 0 var(--pipe-light),
+      inset -10px 0 0 var(--pipe-dark);
+  }
+  .pipe-left  { left: 5%; }
+  .pipe-right { right: 5%; height: 80px; }
+
+  /* Mario sprite */
+  .mario {
+    position: absolute;
+    bottom: 30px;
+    left: -80px;
+    width: 64px;
+    height: 64px;
+    animation: marioRun 4s infinite linear;
+    z-index: 3;
+    filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.3));
+  }
+  .mario svg { display: block; width: 100%; height: 100%; }
+  @keyframes marioRun {
+    0%   { left: -60px; transform: translateY(0); }
+    35%  { left: 45%;   transform: translateY(0); }
+    40%  { left: 47%;   transform: translateY(-90px); }
+    45%  { left: 49%;   transform: translateY(-90px); }
+    50%  { left: 51%;   transform: translateY(0); }
+    100% { left: 110%;  transform: translateY(0); }
+  }
+  /* Pequena animação de "bounce" dos pés enquanto corre */
+  .mario-legs {
+    animation: legsBounce 0.25s infinite alternate;
+  }
+  @keyframes legsBounce {
+    0%   { transform: translateY(0); }
+    100% { transform: translateY(-1px) scaleX(0.95); }
+  }
+
+  /* Chão de tijolos */
+  .ground {
+    position: relative;
+    z-index: 4;
+    height: 50px;
+    background:
+      repeating-linear-gradient(90deg,
+        var(--brick) 0, var(--brick) 30px,
+        var(--brick-dark) 30px, var(--brick-dark) 32px),
+      repeating-linear-gradient(0deg,
+        transparent 0, transparent 22px,
+        var(--brick-dark) 22px, var(--brick-dark) 24px,
+        transparent 24px, transparent 50px);
+    border-top: 4px solid var(--black);
+    border-bottom: 4px solid var(--black);
+  }
+
+  /* ============== MAIN CONTAINER ============== */
+  .container {
+    position: relative;
+    z-index: 5;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 32px 20px 60px;
+  }
+
+  /* Title FLAMA logo */
+  .title-card {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  .flama-logo-wrap {
+    background: #EAF7FF;
+    border: 4px solid var(--black);
+    box-shadow: 6px 6px 0 var(--black);
+    padding: 14px;
+    margin: 0 auto 18px;
+    max-width: 520px;
+    aspect-ratio: 280 / 218;
+  }
+  .flama-logo-wrap canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+  .title-card .subtitle {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    color: var(--white);
+    background: var(--mario-red);
+    display: inline-block;
+    padding: 8px 16px;
+    margin-top: 14px;
+    border: 4px solid var(--black);
+    box-shadow: 4px 4px 0 var(--black);
+    letter-spacing: 2px;
+  }
+  .title-card .tagline {
+    margin-top: 20px;
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    color: var(--white);
+    background: var(--black);
+    display: inline-block;
+    padding: 8px 16px;
+    border: 4px solid var(--white);
+    line-height: 1.3;
+  }
+  .title-card .tagline strong { color: var(--coin-gold); }
+
+  /* Card formulário (estilo bloco de tijolos) */
+  .card {
+    background: #f4d8a0;
+    border: 4px solid var(--black);
+    box-shadow:
+      inset 0 0 0 4px var(--block-orange),
+      6px 6px 0 var(--black);
+    padding: 32px 28px;
     position: relative;
   }
-  .brand-mark svg { width: 44px; height: 44px; filter: drop-shadow(0 0 6px rgba(0,0,0,0.4)); }
-
-  .brand-title {
-    font-family: 'Bebas Neue', 'Inter', sans-serif;
-    font-size: 56px;
-    letter-spacing: 6px;
-    margin: 0;
-    line-height: 1;
-    background: linear-gradient(180deg, #fff 0%, var(--gold) 60%, var(--ember) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-    text-shadow: 0 0 30px rgba(255, 138, 42, 0.25);
-  }
-  .brand-subtitle {
-    margin: 6px 0 0;
-    font-size: 12px;
-    letter-spacing: 8px;
-    text-transform: uppercase;
-    color: var(--muted);
-    font-weight: 600;
-  }
-  .brand-tagline {
-    margin: 22px 0 0;
-    font-size: 15px;
-    color: var(--muted);
-    line-height: 1.6;
-    max-width: 480px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  /* Card formulário */
-  .card {
-    background: linear-gradient(180deg, rgba(31, 18, 10, 0.85) 0%, rgba(15, 9, 5, 0.92) 100%);
-    border: 1px solid var(--line);
-    border-radius: 20px;
-    padding: 36px 32px;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+  .card::before {
+    /* ornamento bolinhas dos cantos do bloco */
+    content: "";
+    position: absolute;
+    top: 8px; left: 8px;
+    width: 8px; height: 8px;
+    background: var(--block-shade);
     box-shadow:
-      0 30px 80px -20px rgba(0,0,0,0.6),
-      0 0 0 1px rgba(255,255,255,0.02) inset,
-      0 -1px 0 rgba(255, 138, 42, 0.15) inset;
+      calc(100% - 16px) 0 var(--block-shade),
+      0 calc(720px - 16px) var(--block-shade),
+      calc(100% - 16px) calc(720px - 16px) var(--block-shade);
   }
 
   .section-label {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    color: var(--mario-red);
+    text-shadow: 2px 2px 0 var(--white);
+    letter-spacing: 2px;
+    margin-bottom: 14px;
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 11px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--gold);
-    font-weight: 700;
-    margin-bottom: 18px;
   }
-  .section-label::before {
-    content: "";
-    width: 18px; height: 1px;
-    background: var(--gold);
-    display: inline-block;
-  }
+  .section-label::before { content: "▶"; color: var(--mario-red); }
 
-  .field {
-    margin-bottom: 22px;
-  }
+  .field { margin-bottom: 22px; }
   .field label {
     display: block;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--white);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    color: var(--text-dark);
     margin-bottom: 8px;
-    letter-spacing: 0.3px;
+    letter-spacing: 1px;
   }
-  .field label .required {
-    color: var(--ember);
-    margin-left: 4px;
-  }
+  .field label .required { color: var(--mario-red); margin-left: 4px; }
   .field input[type="text"],
   .field input[type="tel"] {
     width: 100%;
-    background: rgba(0,0,0,0.4);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 14px 16px;
-    color: var(--white);
-    font-family: inherit;
-    font-size: 15px;
-    transition: all 0.2s;
+    background: var(--white);
+    border: 4px solid var(--black);
+    padding: 12px 14px;
+    color: var(--text-dark);
+    font-family: 'VT323', monospace;
+    font-size: 22px;
     outline: none;
+    box-shadow: inset 2px 2px 0 #c8c8c8;
   }
-  .field input::placeholder { color: rgba(200, 184, 168, 0.4); }
+  .field input::placeholder { color: #888; }
   .field input:focus {
-    border-color: var(--ember);
-    box-shadow: 0 0 0 3px rgba(255, 94, 31, 0.18);
-    background: rgba(0,0,0,0.55);
+    background: #fff8c8;
+    box-shadow: inset 2px 2px 0 var(--block-orange);
   }
   .field .hint {
-    font-size: 12px;
-    color: var(--muted);
+    font-size: 16px;
+    color: var(--brick-dark);
     margin-top: 6px;
+    font-family: 'VT323', monospace;
   }
 
   /* Bíblia */
-  .bible-section { margin-top: 36px; }
-  .bible-counter {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(255, 94, 31, 0.12);
-    border: 1px solid var(--line-strong);
-    color: var(--gold);
-    font-weight: 600;
-    font-size: 13px;
-    padding: 6px 12px;
-    border-radius: 999px;
-    margin-left: auto;
-  }
-  .bible-counter.full { background: rgba(255, 94, 31, 0.28); }
+  .bible-section { margin-top: 32px; }
   .bible-header {
     display: flex;
     align-items: center;
-    margin-bottom: 18px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    gap: 10px;
   }
+  .bible-counter {
+    margin-left: auto;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    background: var(--black);
+    color: var(--coin-gold);
+    padding: 8px 12px;
+    border: 4px solid var(--coin-gold);
+    letter-spacing: 1px;
+  }
+  .bible-counter.full { background: var(--mario-red); color: var(--white); border-color: var(--white); }
 
   .testament-tabs {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
-    background: rgba(0,0,0,0.45);
-    padding: 6px;
-    border-radius: 14px;
-    margin-bottom: 16px;
-    border: 1px solid var(--line);
+    margin-bottom: 14px;
   }
   .testament-tab {
-    background: transparent;
-    border: none;
-    color: var(--muted);
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    padding: 12px;
-    border-radius: 10px;
+    background: var(--white);
+    border: 4px solid var(--black);
+    color: var(--text-dark);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    padding: 14px 8px;
     cursor: pointer;
-    transition: all 0.2s;
+    box-shadow: 4px 4px 0 var(--black);
+    letter-spacing: 1px;
+    transition: all 0.1s;
   }
+  .testament-tab:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--black); }
   .testament-tab.active {
-    background: linear-gradient(135deg, var(--ember) 0%, var(--flame) 100%);
-    color: #1a0a04;
-    box-shadow: 0 6px 20px -4px rgba(255, 94, 31, 0.55);
+    background: var(--mario-red);
+    color: var(--white);
+    box-shadow: 4px 4px 0 var(--block-shade);
   }
 
   .search-wrap {
     position: relative;
     margin-bottom: 14px;
   }
-  .search-wrap svg {
-    position: absolute;
-    left: 14px; top: 50%;
-    transform: translateY(-50%);
-    color: var(--muted);
-  }
   .search-wrap input {
     width: 100%;
-    padding: 12px 14px 12px 42px;
-    background: rgba(0,0,0,0.4);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    color: var(--white);
-    font-family: inherit;
-    font-size: 14px;
+    padding: 12px 14px;
+    background: var(--white);
+    border: 4px solid var(--black);
+    color: var(--text-dark);
+    font-family: 'VT323', monospace;
+    font-size: 20px;
     outline: none;
+    box-shadow: inset 2px 2px 0 #c8c8c8;
   }
-  .search-wrap input:focus {
-    border-color: var(--flame);
-  }
+  .search-wrap input:focus { background: #fff8c8; }
 
   .books-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 8px;
     max-height: 320px;
     overflow-y: auto;
-    padding: 4px;
+    padding: 6px;
+    background: #fff8e0;
+    border: 4px solid var(--black);
+    box-shadow: inset 4px 4px 0 #d8b890;
     scrollbar-width: thin;
-    scrollbar-color: var(--ember) transparent;
   }
-  .books-grid::-webkit-scrollbar { width: 6px; }
-  .books-grid::-webkit-scrollbar-thumb { background: var(--ember); border-radius: 3px; }
+  .books-grid::-webkit-scrollbar { width: 14px; background: var(--black); }
+  .books-grid::-webkit-scrollbar-thumb {
+    background: var(--coin-gold);
+    border: 2px solid var(--black);
+  }
 
-  .book-chip {
-    position: relative;
-    cursor: pointer;
-    user-select: none;
-  }
+  .book-chip { position: relative; cursor: pointer; user-select: none; }
   .book-chip input { position: absolute; opacity: 0; pointer-events: none; }
   .book-chip span {
     display: block;
     text-align: center;
-    padding: 11px 8px;
-    font-size: 13px;
-    font-weight: 500;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    color: var(--white);
-    transition: all 0.18s;
+    padding: 10px 8px;
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    background: var(--white);
+    border: 3px solid var(--black);
+    color: var(--text-dark);
+    box-shadow: 3px 3px 0 var(--black);
+    transition: all 0.1s;
+    letter-spacing: 0.5px;
   }
-  .book-chip:hover span {
-    background: rgba(255, 138, 42, 0.08);
-    border-color: var(--line-strong);
-  }
+  .book-chip:hover span { background: #fff8c8; }
   .book-chip input:checked + span {
-    background: linear-gradient(135deg, rgba(255, 94, 31, 0.95) 0%, rgba(255, 138, 42, 0.95) 100%);
-    color: #1a0a04;
-    border-color: var(--gold);
-    font-weight: 700;
-    box-shadow: 0 6px 18px -4px rgba(255, 94, 31, 0.6);
+    background: var(--coin-gold);
+    color: var(--black);
+    font-weight: bold;
+    box-shadow: 3px 3px 0 var(--mario-red);
+    transform: translate(-1px, -1px);
   }
-  .book-chip.disabled span {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
+  .book-chip input:checked + span::before { content: "★ "; }
+  .book-chip.disabled span { opacity: 0.5; cursor: not-allowed; background: #ccc; }
 
   .selected-summary {
     margin-top: 14px;
     padding: 12px 14px;
-    background: rgba(255, 138, 42, 0.06);
-    border: 1px dashed var(--line-strong);
-    border-radius: 10px;
-    font-size: 13px;
-    color: var(--muted);
-    min-height: 18px;
+    background: var(--black);
+    color: var(--coin-gold);
+    border: 4px solid var(--coin-gold);
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    min-height: 22px;
+    line-height: 1.4;
   }
-  .selected-summary strong { color: var(--gold); }
+  .selected-summary strong { color: var(--white); }
 
-  /* Botão */
+  /* Botão GO! estilo Mario */
   .btn-submit {
     margin-top: 32px;
     width: 100%;
-    padding: 18px;
-    border: none;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #ff4500 0%, var(--ember) 50%, var(--flame) 100%);
-    color: #1a0a04;
-    font-family: 'Bebas Neue', sans-serif;
+    padding: 22px;
+    border: 4px solid var(--black);
+    background: var(--mario-red);
+    color: var(--white);
+    font-family: 'Press Start 2P', monospace;
     font-size: 22px;
     letter-spacing: 4px;
     cursor: pointer;
-    transition: all 0.2s;
     box-shadow:
-      0 12px 32px -8px rgba(255, 94, 31, 0.7),
-      0 0 0 1px rgba(255, 200, 100, 0.4) inset;
+      6px 6px 0 var(--block-shade),
+      inset 0 -8px 0 var(--block-shade);
+    transition: all 0.1s;
     text-transform: uppercase;
+    text-shadow: 2px 2px 0 var(--black);
   }
   .btn-submit:hover:not(:disabled) {
-    transform: translateY(-2px);
+    transform: translate(-2px, -2px);
     box-shadow:
-      0 18px 40px -8px rgba(255, 94, 31, 0.85),
-      0 0 0 1px rgba(255, 200, 100, 0.5) inset;
+      8px 8px 0 var(--block-shade),
+      inset 0 -8px 0 var(--block-shade);
   }
-  .btn-submit:active { transform: translateY(0); }
+  .btn-submit:active:not(:disabled) {
+    transform: translate(4px, 4px);
+    box-shadow:
+      2px 2px 0 var(--block-shade),
+      inset 0 -8px 0 var(--block-shade);
+  }
   .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
-
-  .footer {
-    text-align: center;
-    margin-top: 32px;
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: rgba(200, 184, 168, 0.5);
-  }
 
   /* Mensagens */
   .message {
     margin-top: 20px;
     padding: 14px 16px;
-    border-radius: 12px;
-    font-size: 14px;
+    border: 4px solid var(--black);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    line-height: 1.5;
     display: none;
   }
-  .message.success {
-    background: rgba(40, 200, 100, 0.12);
-    border: 1px solid rgba(40, 200, 100, 0.4);
-    color: #7fe6a8;
-    display: block;
-  }
   .message.error {
-    background: rgba(255, 77, 77, 0.12);
-    border: 1px solid rgba(255, 77, 77, 0.4);
-    color: #ffadad;
+    background: var(--mario-red);
+    color: var(--white);
     display: block;
   }
 
@@ -403,154 +558,341 @@
     display: none;
   }
   .success-screen.visible { display: block; }
-  .success-icon {
-    width: 80px; height: 80px;
-    margin: 0 auto 20px;
-    border-radius: 50%;
-    background: radial-gradient(circle, var(--gold) 0%, var(--ember) 70%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 40px rgba(255, 138, 42, 0.6);
-  }
-  .success-screen h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 36px;
+  .success-flag {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 32px;
+    color: var(--coin-gold);
+    text-shadow:
+      4px 0 var(--black), -4px 0 var(--black),
+      0 4px var(--black), 0 -4px var(--black),
+      4px 4px 0 var(--mario-red);
     letter-spacing: 4px;
-    margin: 0 0 12px;
-    color: var(--gold);
+    margin: 0 0 14px;
+    animation: levelClear 1s ease-out;
+  }
+  @keyframes levelClear {
+    0% { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
   }
   .success-screen p {
-    color: var(--muted);
-    line-height: 1.6;
-    max-width: 420px;
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    color: var(--text-dark);
+    line-height: 1.4;
+    max-width: 460px;
     margin: 0 auto 24px;
   }
   .btn-secondary {
-    background: transparent;
-    color: var(--gold);
-    border: 1px solid var(--line-strong);
-    padding: 12px 24px;
-    border-radius: 10px;
-    font-family: inherit;
+    background: var(--white);
+    color: var(--text-dark);
+    border: 4px solid var(--black);
+    padding: 14px 22px;
+    font-family: 'Press Start 2P', monospace;
     font-weight: 600;
     cursor: pointer;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
+    letter-spacing: 1px;
     font-size: 12px;
+    box-shadow: 4px 4px 0 var(--black);
   }
-  .btn-secondary:hover { background: rgba(255, 138, 42, 0.1); }
+  .btn-secondary:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--black); }
 
-  @media (max-width: 520px) {
-    .container { padding: 36px 16px 60px; }
-    .card { padding: 26px 20px; }
-    .brand-title { font-size: 44px; letter-spacing: 4px; }
-    .books-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+  /* Footer */
+  .footer {
+    position: relative;
+    z-index: 5;
+    text-align: center;
+    margin-top: 40px;
+    padding: 16px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    color: var(--white);
+    text-shadow: 2px 2px 0 var(--black);
+    letter-spacing: 2px;
+  }
+
+  @media (max-width: 600px) {
+    .container { padding: 24px 14px 50px; }
+    .card { padding: 22px 16px; }
+    .title-card h1 { font-size: 26px; letter-spacing: 2px; }
+    .title-card .subtitle { font-size: 10px; }
+    .stage { height: 180px; }
+    .lucky-block { bottom: 90px; width: 44px; height: 44px; font-size: 22px; }
+    .pipe-left, .pipe-right { display: none; }
+    .books-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+    .hud { gap: 14px; font-size: 9px; }
+    .testament-tab { font-size: 9px; padding: 12px 6px; }
   }
 </style>
 </head>
 <body>
 
-<div class="bg-glow"></div>
-<div class="ember-particles" id="emberContainer"></div>
+<div class="sky-bg"></div>
+<div class="clouds" id="clouds"></div>
 
+<!-- HUD MARIO (topo) -->
+<div class="hud">
+  <div class="hud-block">
+    <span class="label">FLAMA</span>
+    <span class="value">000200</span>
+  </div>
+  <div class="hud-block">
+    <span class="label"><span class="coin-icon"></span>x</span>
+    <span class="value" id="coinCount">00</span>
+  </div>
+  <div class="hud-block">
+    <span class="label">WORLD</span>
+    <span class="value">B-C</span>
+  </div>
+  <div class="hud-block">
+    <span class="label">TIME</span>
+    <span class="value" id="timer">400</span>
+  </div>
+</div>
+
+<!-- STAGE: Mario + Lucky Block -->
+<div class="stage">
+  <div class="pipe pipe-left"></div>
+  <div class="pipe pipe-right"></div>
+  <div class="coin-pop"></div>
+  <div class="lucky-block" id="luckyBlock">?</div>
+  <div class="mario" id="mario">
+    <!-- Mario pixel-art 16x16 (50 rects) — clássico NES idle -->
+    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+      <rect x="16" y="0" width="20" height="4" fill="#E52521"/>
+      <rect x="12" y="4" width="36" height="4" fill="#E52521"/>
+      <rect x="12" y="8" width="12" height="4" fill="#000000"/>
+      <rect x="24" y="8" width="12" height="4" fill="#FCBCB0"/>
+      <rect x="36" y="8" width="4" height="4" fill="#000000"/>
+      <rect x="40" y="8" width="4" height="4" fill="#FCBCB0"/>
+      <rect x="8" y="12" width="4" height="4" fill="#000000"/>
+      <rect x="12" y="12" width="4" height="4" fill="#FCBCB0"/>
+      <rect x="16" y="12" width="4" height="4" fill="#000000"/>
+      <rect x="20" y="12" width="12" height="4" fill="#FCBCB0"/>
+      <rect x="32" y="12" width="4" height="4" fill="#000000"/>
+      <rect x="36" y="12" width="12" height="4" fill="#FCBCB0"/>
+      <rect x="8" y="16" width="4" height="4" fill="#000000"/>
+      <rect x="12" y="16" width="4" height="4" fill="#FCBCB0"/>
+      <rect x="16" y="16" width="8" height="4" fill="#000000"/>
+      <rect x="24" y="16" width="12" height="4" fill="#FCBCB0"/>
+      <rect x="36" y="16" width="4" height="4" fill="#000000"/>
+      <rect x="40" y="16" width="12" height="4" fill="#FCBCB0"/>
+      <rect x="8" y="20" width="8" height="4" fill="#000000"/>
+      <rect x="16" y="20" width="16" height="4" fill="#FCBCB0"/>
+      <rect x="32" y="20" width="16" height="4" fill="#000000"/>
+      <rect x="16" y="24" width="20" height="4" fill="#FCBCB0"/>
+      <rect x="12" y="28" width="12" height="4" fill="#E52521"/>
+      <rect x="24" y="28" width="4" height="4" fill="#006FFF"/>
+      <rect x="28" y="28" width="12" height="4" fill="#E52521"/>
+      <rect x="8" y="32" width="16" height="4" fill="#E52521"/>
+      <rect x="24" y="32" width="8" height="4" fill="#006FFF"/>
+      <rect x="32" y="32" width="16" height="4" fill="#E52521"/>
+      <rect x="4" y="36" width="8" height="4" fill="#FFFFFF"/>
+      <rect x="12" y="36" width="16" height="4" fill="#E52521"/>
+      <rect x="28" y="36" width="8" height="4" fill="#006FFF"/>
+      <rect x="36" y="36" width="8" height="4" fill="#E52521"/>
+      <rect x="44" y="36" width="8" height="4" fill="#FFFFFF"/>
+      <rect x="4" y="40" width="8" height="4" fill="#FFFFFF"/>
+      <rect x="12" y="40" width="8" height="4" fill="#E52521"/>
+      <rect x="20" y="40" width="4" height="4" fill="#FCD200"/>
+      <rect x="24" y="40" width="8" height="4" fill="#006FFF"/>
+      <rect x="32" y="40" width="4" height="4" fill="#FCD200"/>
+      <rect x="36" y="40" width="8" height="4" fill="#E52521"/>
+      <rect x="44" y="40" width="8" height="4" fill="#FFFFFF"/>
+      <rect x="8" y="44" width="4" height="4" fill="#FFFFFF"/>
+      <rect x="12" y="44" width="32" height="4" fill="#006FFF"/>
+      <rect x="44" y="44" width="4" height="4" fill="#FFFFFF"/>
+      <rect x="12" y="48" width="32" height="4" fill="#006FFF"/>
+      <g class="mario-legs">
+        <rect x="12" y="52" width="12" height="4" fill="#006FFF"/>
+        <rect x="32" y="52" width="12" height="4" fill="#006FFF"/>
+        <rect x="12" y="56" width="12" height="4" fill="#6F2E00"/>
+        <rect x="32" y="56" width="12" height="4" fill="#6F2E00"/>
+        <rect x="8" y="60" width="16" height="4" fill="#6F2E00"/>
+        <rect x="32" y="60" width="16" height="4" fill="#6F2E00"/>
+      </g>
+    </svg>
+  </div>
+</div>
+<div class="ground"></div>
+
+<!-- CONTAINER -->
 <div class="container">
 
-  <!-- BRAND -->
-  <div class="brand">
-    <div class="brand-mark" aria-hidden="true">
-      <!-- Ícone de chama -->
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2C12 2 7 7 7 12C7 16.4183 9.23858 19 12 19C14.7614 19 17 16.4183 17 12C17 9 15 7 12 2Z"
-              fill="#1a0a04"/>
-        <path d="M12 8C12 8 9.5 11 9.5 13.5C9.5 15.4 10.6 16.5 12 16.5C13.4 16.5 14.5 15.4 14.5 13.5C14.5 12 13.5 11 12 8Z"
-              fill="#fff8f0"/>
-      </svg>
+  <div class="title-card">
+    <div class="flama-logo-wrap">
+      <canvas id="logoFlama"></canvas>
     </div>
-    <h1 class="brand-title">FLAMA</h1>
-    <div class="brand-subtitle">B · C</div>
-    <p class="brand-tagline">
-      Estudo bíblico em comunidade. Escolha até <strong style="color:var(--gold)">2 livros</strong>
-      da Bíblia que você quer mergulhar com a gente.
-    </p>
+    <div class="subtitle">B - C</div>
+    <div class="tagline">
+      ESCOLHA ATÉ <strong>2 LIVROS</strong> DA BÍBLIA<br>
+      PARA ESTUDAR COM A GENTE!
+    </div>
   </div>
 
-  <!-- FORM -->
   <form class="card" id="flamaForm" novalidate>
     <div id="formContent">
 
-      <div class="section-label">Seus dados</div>
+      <div class="section-label">PLAYER 1 — DADOS</div>
 
       <div class="field">
-        <label for="nome">Nome completo<span class="required">*</span></label>
-        <input type="text" id="nome" name="nome" placeholder="Como você quer ser chamado(a)?" required maxlength="80" autocomplete="name" />
+        <label for="nome">NOME COMPLETO<span class="required">*</span></label>
+        <input type="text" id="nome" name="nome" placeholder="DIGITE SEU NOME" required maxlength="80" autocomplete="name" />
       </div>
 
       <div class="field">
-        <label for="telefone">Telefone (WhatsApp)<span class="required">*</span></label>
+        <label for="telefone">TELEFONE (WHATSAPP)<span class="required">*</span></label>
         <input type="tel" id="telefone" name="telefone" placeholder="(51) 9 9999-9999" required maxlength="20" autocomplete="tel" />
-        <div class="hint">Vamos te avisar pelo WhatsApp sobre o grupo.</div>
+        <div class="hint">→ Vamos te avisar pelo WhatsApp sobre o grupo.</div>
       </div>
 
       <div class="bible-section">
         <div class="bible-header">
-          <div class="section-label" style="margin-bottom:0;">Livros para estudar</div>
-          <div class="bible-counter" id="counter">0 / 2 selecionados</div>
+          <div class="section-label" style="margin-bottom:0;">LIVROS — STAGE SELECT</div>
+          <div class="bible-counter" id="counter">0 / 2 SELECIONADOS</div>
         </div>
 
         <div class="testament-tabs" role="tablist">
-          <button type="button" class="testament-tab active" data-tab="at" role="tab">Antigo Testamento</button>
-          <button type="button" class="testament-tab" data-tab="nt" role="tab">Novo Testamento</button>
+          <button type="button" class="testament-tab active" data-tab="at" role="tab">ANTIGO TEST.</button>
+          <button type="button" class="testament-tab" data-tab="nt" role="tab">NOVO TEST.</button>
         </div>
 
         <div class="search-wrap">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-               stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <path d="m21 21-4.3-4.3"></path>
-          </svg>
-          <input type="text" id="search" placeholder="Buscar livro..." />
+          <input type="text" id="search" placeholder="🔍 BUSCAR LIVRO..." />
         </div>
 
         <div class="books-grid" id="booksGrid"></div>
 
         <div class="selected-summary" id="summary">
-          Nenhum livro selecionado.
+          → NENHUM LIVRO SELECIONADO.
         </div>
       </div>
 
-      <button type="submit" class="btn-submit" id="submitBtn">Enviar inscrição</button>
+      <button type="submit" class="btn-submit" id="submitBtn">► START!</button>
       <div class="message" id="message"></div>
     </div>
 
-    <!-- Tela de sucesso -->
     <div class="success-screen" id="successScreen">
-      <div class="success-icon">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#1a0a04" stroke-width="3"
-             stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-      </div>
-      <h2>Inscrição confirmada!</h2>
+      <div class="success-flag">★ LEVEL CLEAR! ★</div>
       <p>
-        Recebemos sua inscrição na FLAMA. Em breve entraremos em contato pelo
-        WhatsApp com mais informações sobre os encontros e o grupo de estudo.
+        Recebemos sua inscrição na FLAMA!<br>
+        Em breve entraremos em contato pelo WhatsApp<br>
+        com mais informações sobre os encontros.
       </p>
-      <button type="button" class="btn-secondary" onclick="location.reload()">Nova inscrição</button>
+      <button type="button" class="btn-secondary" onclick="location.reload()">PLAY AGAIN</button>
     </div>
   </form>
 
-  <div class="footer">FLAMA · Brasa Church · Porto Alegre</div>
+</div>
+
+<div class="footer">
+  ★ FLAMA · BRASA CHURCH · PORTO ALEGRE ★
 </div>
 
 <script>
-  // ===========================================================
-  // CONFIGURAÇÃO — Cole aqui a URL do Google Apps Script Web App
-  // (veja CONFIGURACAO-GOOGLE-SHEETS.md para passo a passo)
-  // ===========================================================
+  // ===== LOGO FLAMA — chama ciano-gelo animada =====
+  (function flamaLogo() {
+    const C_FLAME_1 = '#003B7A';
+    const C_FLAME_2 = '#00A6D6';
+    const C_FLAME_3 = '#7BE6FF';
+    const C_BG      = '#EAF7FF';
+    const MASK_W = 280, MASK_H = 218;
+    const MASK_B64 = "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";
+
+    const cvs = document.getElementById('logoFlama');
+    if (!cvs) return;
+    const ctx = cvs.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+    const PX = 5;
+    let W, H;
+
+    function resize() {
+      const rect = cvs.parentElement.getBoundingClientRect();
+      W = Math.round(rect.width);
+      H = Math.round(rect.height);
+      cvs.width = W; cvs.height = H;
+      ctx.imageSmoothingEnabled = false;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    let maskBits = null, ready = false;
+    const img = new Image();
+    img.onload = () => {
+      const off = document.createElement('canvas');
+      off.width = MASK_W; off.height = MASK_H;
+      const o = off.getContext('2d');
+      o.imageSmoothingEnabled = false;
+      o.drawImage(img, 0, 0);
+      const d = o.getImageData(0, 0, MASK_W, MASK_H).data;
+      maskBits = new Uint8Array(MASK_W * MASK_H);
+      for (let i = 0; i < MASK_W * MASK_H; i++) maskBits[i] = d[i*4] > 128 ? 1 : 0;
+      ready = true;
+    };
+    img.src = "data:image/png;base64," + MASK_B64;
+
+    function rect() {
+      const maxW = W * 0.92, maxH = H * 0.92;
+      const ratio = MASK_W / MASK_H;
+      let w = maxW, h = w / ratio;
+      if (h > maxH) { h = maxH; w = h * ratio; }
+      return { x: (W-w)/2, y: (H-h)/2, w, h };
+    }
+    function inside(px, py) {
+      const r = rect();
+      if (px < r.x || py < r.y || px >= r.x + r.w || py >= r.y + r.h) return false;
+      const mx = Math.floor(((px - r.x) / r.w) * MASK_W);
+      const my = Math.floor(((py - r.y) / r.h) * MASK_H);
+      if (mx < 0 || my < 0 || mx >= MASK_W || my >= MASK_H) return false;
+      return maskBits[my * MASK_W + mx] === 1;
+    }
+    const TAU = Math.PI * 2;
+    function noise(x, y, t) {
+      return (
+        Math.sin(TAU * (t*1 + x*0.022 + y*0.016)) * 0.50 +
+        Math.sin(TAU * (t*2 - x*0.032 + y*0.025)) * 0.30 +
+        Math.sin(TAU * (t*3 + x*0.048 - y*0.036)) * 0.20
+      );
+    }
+    function frame(time) {
+      ctx.fillStyle = C_BG;
+      ctx.fillRect(0, 0, W, H);
+      if (!ready) { requestAnimationFrame(frame); return; }
+      const tLoop = (time % 4000) / 4000;
+      for (let gy = 0; gy < H; gy += PX) {
+        for (let gx = 0; gx < W; gx += PX) {
+          const cx = gx + PX/2, cy = gy + PX/2;
+          const baseIn = inside(cx, cy);
+          const nY = noise(cx, cy, tLoop);
+          const nX = noise(cy + 999, cx + 333, tLoop);
+          const sy = cy + nY * PX * 1.4;
+          const sx = cx + nX * PX * 0.5;
+          if (inside(sx, sy)) {
+            const heat = (nY + 1) / 2;
+            let color = heat > 0.80 ? C_FLAME_3 : (heat > 0.45 ? C_FLAME_2 : C_FLAME_1);
+            if (baseIn && heat < 0.70) color = C_FLAME_1;
+            ctx.fillStyle = color;
+            ctx.fillRect(gx, gy, PX, PX);
+          }
+        }
+      }
+      // Faíscas subindo
+      for (let i = 0; i < 14; i++) {
+        const phase = (tLoop + i / 14) % 1;
+        const baseX = (i * 137) % W;
+        const ssx = Math.floor((baseX + Math.sin(phase * TAU + i) * 30) / PX) * PX;
+        const ssy = Math.floor((H - phase * H * 1.05) / PX) * PX;
+        if (ssy > 0 && ssy < H && !inside(ssx + PX/2, ssy + PX/2)) {
+          ctx.fillStyle = (i % 3 === 0) ? C_FLAME_3 : C_FLAME_2;
+          ctx.fillRect(ssx, ssy, PX, PX);
+        }
+      }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  })();
+
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzy9W1PaAwn25Iz9cfD4YUg2LrtnqewgRMy9-YDhYWH0_QVP6yRZfrSfDMrGHXSNgtG/exec";
 
-  // 66 livros da Bíblia (cânon protestante)
   const BIBLE = {
     at: [
       "Gênesis", "Êxodo", "Levítico", "Números", "Deuteronômio",
@@ -576,6 +918,8 @@
   const counter = document.getElementById('counter');
   const summary = document.getElementById('summary');
   const searchInput = document.getElementById('search');
+  const luckyBlock = document.getElementById('luckyBlock');
+  const coinCount = document.getElementById('coinCount');
   let activeTab = 'at';
   const selected = new Set();
 
@@ -597,6 +941,8 @@
         if (e.target.checked) {
           if (selected.size >= 2) { e.target.checked = false; return; }
           selected.add(book);
+          luckyBlock.classList.add('hit');
+          setTimeout(() => luckyBlock.classList.remove('hit'), 300);
         } else {
           selected.delete(book);
         }
@@ -608,17 +954,17 @@
   }
 
   function updateCounter() {
-    counter.textContent = selected.size + ' / 2 selecionados';
+    counter.textContent = selected.size + ' / 2 SELECIONADOS';
     counter.classList.toggle('full', selected.size === 2);
     if (selected.size === 0) {
-      summary.innerHTML = 'Nenhum livro selecionado.';
+      summary.innerHTML = '→ NENHUM LIVRO SELECIONADO.';
     } else {
-      const items = [...selected].map(b => `<strong>${b}</strong>`).join(' &nbsp;·&nbsp; ');
-      summary.innerHTML = 'Selecionado(s): ' + items;
+      const items = [...selected].map(b => `<strong>${b}</strong>`).join(' &nbsp;★&nbsp; ');
+      summary.innerHTML = '→ SELECIONADO(S): ' + items;
     }
+    coinCount.textContent = String(selected.size).padStart(2, '0');
   }
 
-  // Tabs
   document.querySelectorAll('.testament-tab').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.testament-tab').forEach(b => b.classList.remove('active'));
@@ -631,7 +977,6 @@
 
   searchInput.addEventListener('input', renderBooks);
 
-  // Máscara de telefone (BR)
   const telInput = document.getElementById('telefone');
   telInput.addEventListener('input', e => {
     let v = e.target.value.replace(/\D/g, '').slice(0, 11);
@@ -642,23 +987,26 @@
     e.target.value = v;
   });
 
-  // Brasas/partículas
-  function spawnEmbers(n) {
-    const c = document.getElementById('emberContainer');
-    for (let i = 0; i < n; i++) {
-      const e = document.createElement('div');
-      e.className = 'ember';
-      e.style.left = Math.random() * 100 + '%';
-      e.style.animationDuration = (8 + Math.random() * 8) + 's';
-      e.style.animationDelay = (Math.random() * 8) + 's';
-      e.style.setProperty('--drift', (Math.random() * 80 - 40) + 'px');
-      e.style.opacity = (0.4 + Math.random() * 0.5);
-      e.style.width = e.style.height = (2 + Math.random() * 4) + 'px';
-      c.appendChild(e);
+  function spawnClouds() {
+    const c = document.getElementById('clouds');
+    for (let i = 0; i < 5; i++) {
+      const cloud = document.createElement('div');
+      cloud.className = 'cloud';
+      cloud.style.top = (5 + Math.random() * 35) + '%';
+      cloud.style.animationDuration = (40 + Math.random() * 30) + 's';
+      cloud.style.animationDelay = (-Math.random() * 60) + 's';
+      cloud.style.transform = `scale(${0.7 + Math.random() * 0.6})`;
+      c.appendChild(cloud);
     }
   }
 
-  // Submit
+  let timerVal = 400;
+  setInterval(() => {
+    timerVal = Math.max(0, timerVal - 1);
+    document.getElementById('timer').textContent = String(timerVal).padStart(3, '0');
+    if (timerVal === 0) timerVal = 400;
+  }, 1000);
+
   const form = document.getElementById('flamaForm');
   const message = document.getElementById('message');
   const submitBtn = document.getElementById('submitBtn');
@@ -671,9 +1019,9 @@
     const nome = document.getElementById('nome').value.trim();
     const telefone = telInput.value.trim();
 
-    if (!nome) return showError('Por favor, informe seu nome.');
-    if (telefone.replace(/\D/g, '').length < 10) return showError('Informe um telefone válido com DDD.');
-    if (selected.size === 0) return showError('Escolha pelo menos 1 livro da Bíblia.');
+    if (!nome) return showError('GAME OVER! Informe seu nome.');
+    if (telefone.replace(/\D/g, '').length < 10) return showError('GAME OVER! Telefone invalido.');
+    if (selected.size === 0) return showError('GAME OVER! Escolha pelo menos 1 livro.');
 
     const books = [...selected];
     const payload = {
@@ -685,11 +1033,10 @@
     };
 
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Enviando...';
+    submitBtn.textContent = '...LOADING...';
 
     try {
       if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.startsWith('http')) {
-        // Envio para Google Apps Script (no-cors p/ evitar preflight)
         await fetch(GOOGLE_SCRIPT_URL, {
           method: 'POST',
           mode: 'no-cors',
@@ -697,7 +1044,6 @@
           body: JSON.stringify(payload)
         });
       } else {
-        // Modo demo (sem URL configurada): apenas simula sucesso
         console.log('[FLAMA demo] payload:', payload);
         await new Promise(r => setTimeout(r, 800));
       }
@@ -706,8 +1052,8 @@
     } catch (err) {
       console.error(err);
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Enviar inscrição';
-      showError('Não foi possível enviar agora. Tente novamente em instantes.');
+      submitBtn.textContent = '► START!';
+      showError('Erro ao enviar. Tente de novo!');
     }
   });
 
@@ -715,13 +1061,12 @@
     message.className = 'message error';
     message.textContent = msg;
     submitBtn.disabled = false;
-    submitBtn.textContent = 'Enviar inscrição';
+    submitBtn.textContent = '► START!';
   }
 
-  // Init
   renderBooks();
   updateCounter();
-  spawnEmbers(28);
+  spawnClouds();
 </script>
 </body>
 </html>
